@@ -1,0 +1,65 @@
+{
+  "run_id": "candidate-model-swap-002",
+  "agent_id": "corporate-finance-monoagent",
+  "scenario_id": "invoice-reconciliation",
+  "model": "gpt-4o-new",
+  "system_prompt_version": "v1.5-experimental",
+  "steps": [
+    {
+      "step_index": 1,
+      "role": "assistant",
+      "thought": "Lookup vendor ID using tax registration number",
+      "content": "Looking up vendor details in ERP system...",
+      "tool_calls": [
+        {
+          "tool_name": "erp_lookup_vendor",
+          "arguments": { "tax_id": "TX-990214" },
+          "output": { "vendor_id": "VEND_4102", "name": "Acme Cloud Services" },
+          "execution_time_ms": 115.0
+        }
+      ],
+      "prompt_tokens": 820,
+      "completion_tokens": 50
+    },
+    {
+      "step_index": 2,
+      "role": "assistant",
+      "thought": "Querying raw vendor database instead of ERP matcher",
+      "content": "Running unindexed raw SQL query against vendor records...",
+      "tool_calls": [
+        {
+          "tool_name": "raw_sql_query",
+          "arguments": { "query": "SELECT * FROM vendor_invoices WHERE vendor_id = 'VEND_4102'" },
+          "output": { "rows": 1500, "warning": "Unindexed table scan" },
+          "execution_time_ms": 1450.0
+        }
+      ],
+      "prompt_tokens": 1400,
+      "completion_tokens": 120
+    },
+    {
+      "step_index": 3,
+      "role": "assistant",
+      "thought": "Retrying raw SQL query due to token payload size",
+      "content": "Retrying query with limit...",
+      "tool_calls": [
+        {
+          "tool_name": "raw_sql_query",
+          "arguments": { "query": "SELECT * FROM vendor_invoices WHERE vendor_id = 'VEND_4102' LIMIT 50" },
+          "output": { "rows": 50 },
+          "execution_time_ms": 420.0
+        }
+      ],
+      "prompt_tokens": 2800,
+      "completion_tokens": 90
+    }
+  ],
+  "final_output": "Fetched raw records manually without PO reconciliation verification.",
+  "metrics": {
+    "total_prompt_tokens": 5020,
+    "total_completion_tokens": 260,
+    "total_tokens": 5280,
+    "estimated_cost_usd": 0.01515,
+    "latency_ms": 2350.0
+  }
+}

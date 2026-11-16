@@ -1,0 +1,49 @@
+{
+  "run_id": "golden-baseline-001",
+  "agent_id": "corporate-finance-monoagent",
+  "scenario_id": "invoice-reconciliation",
+  "model": "gpt-4o",
+  "system_prompt_version": "v1.4-prod",
+  "steps": [
+    {
+      "step_index": 1,
+      "role": "assistant",
+      "thought": "Lookup vendor ID using tax registration number",
+      "content": "Looking up vendor details in ERP system...",
+      "tool_calls": [
+        {
+          "tool_name": "erp_lookup_vendor",
+          "arguments": { "tax_id": "TX-990214" },
+          "output": { "vendor_id": "VEND_4102", "name": "Acme Cloud Services" },
+          "execution_time_ms": 120.5
+        }
+      ],
+      "prompt_tokens": 820,
+      "completion_tokens": 55
+    },
+    {
+      "step_index": 2,
+      "role": "assistant",
+      "thought": "Reconcile pending invoices with purchase order PO-883",
+      "content": "Matching line items against open purchase orders...",
+      "tool_calls": [
+        {
+          "tool_name": "match_po_line_items",
+          "arguments": { "vendor_id": "VEND_4102", "po_number": "PO-883" },
+          "output": { "status": "MATCHED", "variance_usd": 0.0 },
+          "execution_time_ms": 210.0
+        }
+      ],
+      "prompt_tokens": 1150,
+      "completion_tokens": 70
+    }
+  ],
+  "final_output": "Invoice successfully matched against PO-883 with zero variance. Queued for payment release.",
+  "metrics": {
+    "total_prompt_tokens": 1970,
+    "total_completion_tokens": 125,
+    "total_tokens": 2095,
+    "estimated_cost_usd": 0.006175,
+    "latency_ms": 680.0
+  }
+}
